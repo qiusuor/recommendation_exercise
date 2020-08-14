@@ -77,15 +77,13 @@ def give_recom_result(user_vec, item_vec, userid):
     for itemid in item_vec:
         item_vector = item_vec[itemid]
         res = np.dot(user_vecor,item_vector)/(np.linalg.norm((user_vecor)*np.linalg.norm(item_vector)))
-        record[itemid] = res                    # record={'itemid':'res'}
-        record_list = list(record.items())      # record.items()=[(itemid,res),(itemid,res)]   在此用list转换格式是Python3的不兼容问题
-    for zuhe in sorted(record.items(), key=lambda rec: record_list[1], reverse=True)[:fix_num]:
+        record[itemid] = res
+    record_list = list(record.items())
+    for zuhe in sorted(record_list, key=lambda rec:rec[1], reverse=True)[:fix_num]:
         itemid = zuhe[0]
         score = round(zuhe[1],3)
         recom_list.append((itemid,score))
     return recom_list
-
-
 
 def ana_recom_result(train_data,userid,recom_list):
     '''
@@ -94,11 +92,12 @@ def ana_recom_result(train_data,userid,recom_list):
     :param recom_list:模型给出的推荐结果
     '''
     item_info = get_item_info('data/movies.txt')
+    print('用户喜好：')
     for data_instance in train_data:
         userid1,itemid,label = data_instance
         if userid1 == userid and label == 1:
             print(item_info[itemid])
-    print('返回结果：')
+    print('推荐结果：')
     for zuhe in recom_list:
         print(item_info[zuhe[0]])
 
