@@ -58,6 +58,7 @@ def get_train_data(input_file):
     score_dict = get_ave_score(input_file)
     neg_dict = {}
     pos_dict = {}
+    pos_items={}
     linenum = 0
     score_thr =4
     train_data = []
@@ -72,13 +73,16 @@ def get_train_data(input_file):
         userid ,itemid,rating = item[0],item[1],float(item[2])
         if userid not in pos_dict:
             pos_dict[userid] = []
+            pos_items[userid] = set()
         if userid not in neg_dict:
             neg_dict[userid] = []
         if rating >= score_thr:
             pos_dict[userid].append((itemid,1)) #正样本，label
+            pos_items[userid].add(itemid)
         else:
             score = score_dict.get(itemid,0)#负样本，用户对他的打分
             neg_dict[userid].append((itemid,score)) #负样本，存储的平均评分
+            # neg_items[userid].add(itemid)
 
     fp.close()
     #训练样本
@@ -92,7 +96,7 @@ def get_train_data(input_file):
         #uer_id 负样本排序（按照得分排序，逆序）
         sorted_neg_list = sorted(neg_dict[userid],key= lambda element:element[1],reverse=True)[:data_num]
         train_data += [(userid,zuhe[0],0 )for zuhe in sorted_neg_list]
-    return train_data
+    return train_data,pos_items
 
 # if __name__ == "__main__":
 #     train_data = get_train_data("data/ratings.txt")

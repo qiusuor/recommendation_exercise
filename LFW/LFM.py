@@ -55,12 +55,12 @@ def model_train_process():
     test lfm model train
     :return:
     """
-    train_data = get_train_data("data/ratings.txt")
+    train_data,pos_items = get_train_data("data/ratings.txt")
     user_vec, item_vec =lfm_train(train_data,50,0.01,0.1,50)
-    recom_result = give_recom_result(user_vec, item_vec, '11')
+    recom_result = give_recom_result(user_vec, item_vec, '11',pos_items)
     ana_recom_result(train_data, '11', recom_result)
 
-def give_recom_result(user_vec, item_vec, userid):
+def give_recom_result(user_vec, item_vec, userid,pos_items):
     '''
     user lfm model result give fix userid recom result
     :param user_vec: lfm model result
@@ -75,6 +75,7 @@ def give_recom_result(user_vec, item_vec, userid):
     fix_num = 5
     user_vecor = user_vec[userid]
     for itemid in item_vec:
+        if itemid in pos_items[userid]:continue
         item_vector = item_vec[itemid]
         res = np.dot(user_vecor,item_vector)/(np.linalg.norm((user_vecor)*np.linalg.norm(item_vector)))
         record[itemid] = res
