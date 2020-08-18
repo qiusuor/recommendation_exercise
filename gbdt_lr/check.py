@@ -2,7 +2,7 @@
 
 import sys
 import numpy as np
-import xgboost as xgb
+import gbdt_lr as xgb
 import utils
 import train
 from scipy.sparse import csc_matrix  #稀疏矩阵，方便计算

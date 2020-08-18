@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-import xgboost as xgb
+import gbdt_lr as xgb
 import utils
 import numpy as np
 from sklearn.linear_model import  LogisticRegressionCV as LRCV
