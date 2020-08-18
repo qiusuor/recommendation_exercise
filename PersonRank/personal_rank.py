@@ -21,8 +21,7 @@ def personal_rank(graph, root, alpha, iter_num, recom_num=10):
     rank[root] = 1
     recon_result = {}  # 输出
     for iter_dex in range(iter_num):
-        tmp_rank = {}  # 记录该迭代轮次下，其他顶点对root顶点的PR值
-        tmp_rank = {i: 0 for i in graph}
+        tmp_rank = {i: 0 for i in graph} # 记录该迭代轮次下，其他顶点对root顶点的PR值
         for out_userid, out_dict in graph.items():
             # out_point是userid，out_dict是userid评分高于4.5分的电影字典{'item_10': 1}
             # 代表着二分图中用户指向物品的箭头
@@ -63,15 +62,16 @@ def personal_rank_matrix(graph, root, alpha, recom_num=10):
     :return: a dict:{key:item,value:pr_score}
     '''
     m, vertex, address_dict = graph_to_m(graph)  # address_dict 所有顶点的行号
+    # print(vertex)
     if root not in address_dict:
         return {}
     pr_score_dict = {}  # 未排序pr值
     pr_recom_dic = {}  # 已排序pr值
 
-    mat_all = mat_all_point(m, vertex, alpha)  # （1-alpha*M^T）
+    mat_all = mat_all_point(m, vertex, alpha)  # （E-alpha*M^T）
     index = address_dict[root] #获得 user的 row号 id
     initial_r0_list = [[0] for i in range(len(vertex))] #初始化 r0 矩阵（m+n行，一列，并且只有 root行为 1 ，其他都为0)
-    print(initial_r0_list)
+    # print(initial_r0_list)
     initial_r0_list[index] = [1]#（m+n行，一列，并且只有 root行为 1 ，其他都为0)
     r0_array = np.array(initial_r0_list)
 
@@ -123,3 +123,4 @@ if __name__ == "__main__":
         if i in recom_resuit_matrix:
             num += 1
     print("基础版本和矩阵版本的相似度：",num)
+
