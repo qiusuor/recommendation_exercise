@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 
-
+import tensorflow.compat.v1 as tf
+tf.disable_v2_behavior()
 import os
-import tensorflow as tf
+# import tensorflow as tf
 
 def get_featrue_column():
     """
@@ -16,10 +17,10 @@ def get_featrue_column():
 
     # 连续特征 --- 放到  deep层
     age = tf.feature_column.numeric_column("age")
-    education_num = tf.feature_column.numeric_column("education_num")
-    caption_gain = tf.feature_column.numeric_column("capital_gain")
-    capital_loss = tf.feature_column.numeric_column("capital_loss")
-    hours_per_week = tf.feature_column.numeric_column("hours_per_week")
+    education_num = tf.feature_column.numeric_column("education-num")
+    capital_gain = tf.feature_column.numeric_column("capital-gain")
+    capital_loss = tf.feature_column.numeric_column("capital-loss")
+    hours_per_week = tf.feature_column.numeric_column("hours-per-week")
 
     # 离散特征：首先进行哈希，哈希得到的特征放到wide层，然后再进行embedding 放入到deep层
 
@@ -27,7 +28,7 @@ def get_featrue_column():
                                                                        hash_bucket_size=512)  # 因为离散特征取值总的数目，不会超过512
     education = tf.feature_column.categorical_column_with_hash_bucket("education",
                                                                       hash_bucket_size=512)  # 因为离散特征取值总的数目，不会超过512
-    marital_status = tf.feature_column.categorical_column_with_hash_bucket("marital_status",
+    marital_status = tf.feature_column.categorical_column_with_hash_bucket("marital-status",
                                                                            hash_bucket_size=512)  # 因为离散特征取值总的数目，不会超过512
     occupation = tf.feature_column.categorical_column_with_hash_bucket("occupation",
                                                                        hash_bucket_size=512)  # 因为离散特征取值总的数目，不会超过512
@@ -36,7 +37,7 @@ def get_featrue_column():
 
     # 对年龄、收入、支出 连续特征进行离散化
     age_bucket = tf.feature_column.bucketized_column(age, boundaries=[18, 25, 30, 35, 40, 45, 50, 55, 60, 65])
-    gain_bucket = tf.feature_column.bucketized_column(caption_gain, boundaries=[0, 1000, 2000, 3000, 10000])
+    gain_bucket = tf.feature_column.bucketized_column(capital_gain, boundaries=[0, 1000, 2000, 3000, 10000])
     loss_bucket = tf.feature_column.bucketized_column(capital_loss, boundaries=[0, 1000, 2000, 3000, 5000])
 
     # 交叉特征---连续特征的交叉
@@ -52,7 +53,7 @@ def get_featrue_column():
     wide_columns = base_columns + cross_columns
 
     # 连续特征 + 哈希值的embedding 维度 是9位，因为 2**9 = 512；所以他能涵盖  哈希范围
-    deep_columns = [age, education_num, caption_gain, capital_loss, hours_per_week,
+    deep_columns = [age, education_num, capital_gain, capital_loss, hours_per_week,
                     tf.feature_column.embedding_column(work_class, 9),
                     tf.feature_column.embedding_column(education, 9),
                     tf.feature_column.embedding_column(marital_status, 9),
@@ -60,6 +61,7 @@ def get_featrue_column():
                     tf.feature_column.embedding_column(relationship, 9)
                     ]
 
+    return wide_columns, deep_columns
     return wide_columns, deep_columns
 
 
@@ -237,9 +239,14 @@ def run_main(train_file, test_file, model_folder, model_export_folder):
         model_export_folder: for tf serving
     """
     wide_column, deep_column = get_featrue_column()
+    # print(wide_column)
+    # exit(0)
     model_es, serving_input_fn = build_model_estimator(wide_column, deep_column, model_folder)
+    # exit(0)
     print(model_es,serving_input_fn)
+    # exit(0)
     train_wd_model(model_es, train_file, test_file, model_export_folder, serving_input_fn)
+    # exit(0)
     test_model_performance(model_es, test_file)
 
 
